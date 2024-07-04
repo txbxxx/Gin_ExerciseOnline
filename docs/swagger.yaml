@@ -1,0 +1,37 @@
+info:
+  contact: {}
+paths:
+  /ping:
+    get:
+      responses:
+        "200":
+          description: '{"code":"200","data":""}'
+          schema:
+            type: string
+      summary: 测试连接
+      tags:
+      - 公共方法
+  /problem/searchProblemList:
+    get:
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: size
+        in: query
+        name: size
+        type: integer
+      - description: searchData
+        in: query
+        name: searchData
+        type: string
+      responses:
+        "200":
+          description: '{"code":"200","msg","","data":""}'
+          schema:
+            type: string
+      summary: 查询问题列表
+      tags:
+      - 公共方法
+swagger: "2.0"
