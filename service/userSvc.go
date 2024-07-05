@@ -15,6 +15,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"time"
 )
 
 // UserDetail 用户详细信息
@@ -72,8 +73,8 @@ func Login(c *gin.Context) {
 	//判断用户名或者密码是否为空
 	if userName == "" || password == "" {
 		c.JSON(200, gin.H{
-			"code": 200,
-			"msg":  "用户名和密码为空",
+			"code": -1,
+			"msg":  "用户名或密码为空",
 		})
 		return
 	}
@@ -87,13 +88,13 @@ func Login(c *gin.Context) {
 	if errData != nil {
 		if errors.Is(errData, gorm.ErrRecordNotFound) {
 			c.JSON(200, gin.H{
-				"code": 200,
+				"code": -1,
 				"msg":  "用户名或密码错误",
 			})
 			return
 		}
 		c.JSON(500, gin.H{
-			"code": 500,
+			"code": -1,
 			"msg":  "服务器内部错误，请联系管理员或者提交issue" + errData.Error(),
 		})
 		return
@@ -102,7 +103,7 @@ func Login(c *gin.Context) {
 	//保障再次判断用户是否存在
 	if data == (model.User{}) {
 		c.JSON(200, gin.H{
-			"code": 200,
+			"code": -1,
 			"msg":  "用户名或密码错误",
 		})
 		return
@@ -112,7 +113,7 @@ func Login(c *gin.Context) {
 	token, errToken := utils.GenerateToken(data.Identity, data.Name, data.IsAdmin)
 	if errToken != nil {
 		c.JSON(200, gin.H{
-			"code": "200",
+			"code": "-1",
 			"msg":  "生成Token失败" + errToken.Error(),
 		})
 	}
@@ -123,6 +124,165 @@ func Login(c *gin.Context) {
 		"data": gin.H{
 			"token":    token,
 			"is_admin": data.IsAdmin,
+		},
+	})
+}
+
+// SendCode 向邮箱发送验证码
+// 可优化的点: 随机验证码
+// @Tags 公共方法
+// @Summary 向邮箱发送验证码
+// @Param email formData  string false "email"
+// @Success 200 {string} json "{"code":"200","msg","","data":""}"
+// @Router /user/sendCode [post]
+func SendCode(c *gin.Context) {
+	//获取发送的邮箱
+	email := c.PostForm("email")
+	if email == "" {
+		c.JSON(200, gin.H{
+			"code": -1,
+			"msg":  "邮箱为空",
+		})
+		return
+	}
+
+	//获取随机验证码
+	code := utils.GenerateCode()
+
+	//将验证码存入redis
+	define.RDB.Set(c, email, code, time.Second*300)
+
+	//发送验证码
+	err := utils.SendEmail(email, code)
+	if err != nil {
+		c.JSON(200, gin.H{
+			"code": 200,
+			"msg":  "发送验证码失败" + err.Error(),
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"code": 200,
+		"msg":  "发送验证码成功",
+	})
+}
+
+// Register 注册用户
+// 可优化的点: 随机验证码
+// @Tags 公共方法
+// @Summary 注册用户
+// @Param user_name formData  string false "user_name"
+// @Param password formData  string false "password"
+// @Param email formData  string false "email"
+// @Param phone formData  string false "phone"
+// @Param code formData  string false "code"
+// @Success 200 {string} json "{"code":"200","msg","","data":""}"
+// @Router /user/register [post]
+func Register(c *gin.Context) {
+	//获取用户填写的信息
+	userName := c.PostForm("user_name")
+	password := c.PostForm("password")
+	email := c.PostForm("email")
+	phone := c.PostForm("phone")
+	userCode := c.PostForm("code")
+
+	if userName == "" || password == "" || email == "" || phone == "" || userCode == "" {
+		c.JSON(200, gin.H{
+			"code": -1,
+			"msg":  "参数错误，请检查",
+		})
+		return
+	}
+
+	//查找是否存在用户
+	var userData model.User
+	errSearchUser := define.DB.Model(&model.User{}).Where("name = ? ", userName).Find(&userData).Error
+	if errSearchUser != nil {
+		c.JSON(500, gin.H{
+			"code": -1,
+			"msg":  "服务器内部错误，请联系管理员或者提交issue" + errSearchUser.Error(),
+		})
+		return
+	}
+	if userData != (model.User{}) {
+		c.JSON(200, gin.H{
+			"code": -1,
+			"msg":  "用户已存在",
+		})
+		return
+	}
+
+	//接收验证码
+	sysCode, err := define.RDB.Get(c, email).Result()
+	if err != nil {
+		c.JSON(200, gin.H{
+			"code": -1,
+			"msg":  "验证码错误,请重新获取验证码",
+		})
+		return
+	}
+	//对比验证码
+	if sysCode != userCode {
+		c.JSON(200, gin.H{
+			"code": -1,
+			"msg":  "验证码不匹配！！",
+		})
+	}
+
+	//判断邮箱是否存在
+	errSearchUser = define.DB.Model(&model.User{}).Where("mail = ? ", email).Find(&userData).Error
+	if errSearchUser != nil {
+		c.JSON(200, gin.H{
+			"code": -1,
+			"msg":  "服务器内部错误，请联系管理员或者提交issue" + errSearchUser.Error(),
+		})
+		return
+	}
+
+	if userData != (model.User{}) {
+		c.JSON(200, gin.H{
+			"code": -1,
+			"msg":  "邮箱已经被注册",
+		})
+		return
+	}
+
+	//设置用户唯一标识
+	identity := utils.GenerateUUID()
+
+	//创建用户对象
+	user := &model.User{
+		Name:     userName,
+		Password: password,
+		Identity: identity,
+		Phone:    phone,
+		Mail:     email,
+	}
+	//插入数据库
+	errInsert := define.DB.Model(&model.User{}).Create(&user).Error
+	if errInsert != nil {
+		c.JSON(200, gin.H{
+			"code": -1,
+			"msg":  "服务器内部错误，请联系管理员或者提交issue" + errInsert.Error(),
+		})
+		return
+	}
+
+	//生成token
+	token, errToken := utils.GenerateToken(user.Identity, user.Name, user.IsAdmin)
+	if errToken != nil {
+		c.JSON(200, gin.H{
+			"code": -1,
+			"msg":  "生成Token失败" + errToken.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"code": 200,
+		"msg":  "注册成功！！",
+		"data": gin.H{
+			"token": token,
 		},
 	})
 }

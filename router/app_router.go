@@ -36,6 +36,8 @@ func Router() *gin.Engine {
 	{
 		userApi.GET("/userDetail", service.UserDetail)
 		userApi.POST("/login", service.Login)
+		userApi.POST("/sendCode", service.SendCode)
+		userApi.POST("/register", service.Register)
 	}
 
 	//提交接口

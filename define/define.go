@@ -13,5 +13,6 @@ import "GinProject_ExerciseOnline/utils"
 var (
 	DefaultPage = "1"  // 默认显示页数
 	DefaultSize = "10" // 每页显示个数
-	DB, err     = utils.DBUntil()
+	RDB         = utils.RedisDBUtil()
+	DB, _       = utils.DBUntil()
 )

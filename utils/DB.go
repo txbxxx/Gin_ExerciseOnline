@@ -18,7 +18,7 @@ import (
 
 // DBUntil 用于连接数据库
 func DBUntil() (*gorm.DB, error) {
-	databases := "root:000000@tcp(localhost:3306)/EO?charset=utf8mb4&parseTime=True&loc=Local"
+	databases := DBUser + ":" + DBPwd + "@tcp(" + DBAddr + ")/EO?charset=utf8mb4&parseTime=True&loc=Local"
 	//配置数据库
 	db, err := gorm.Open(mysql.Open(databases), &gorm.Config{
 		SkipDefaultTransaction: false, //禁用事务

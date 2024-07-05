@@ -44,7 +44,7 @@ func SearchSubmitList(c *gin.Context) {
 	err := tx.Count(&count).Offset(page).Limit(size).Find(&submitList).Error
 	if err != nil {
 		c.JSON(200, gin.H{
-			"code": 400,
+			"code": -1,
 			"msg":  "查询失败",
 		})
 		return

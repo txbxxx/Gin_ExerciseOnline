@@ -72,6 +72,12 @@ func TestName(t *testing.T) {
 
 func TestFind(t *testing.T) {
 	var user model.User
-	define.DB.First(&user)
-	fmt.Println(user.IsAdmin)
+	err := define.DB.Model(&model.User{}).Where("mail = ? ", 123).Find(&user).Error
+	if err != nil {
+		t.Error("查询错误", err)
+	}
+
+	if user == (model.User{}) {
+		t.Error("没有找到这个用户")
+	}
 }

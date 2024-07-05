@@ -11,7 +11,9 @@ package test
 import (
 	"GinProject_ExerciseOnline/utils"
 	"fmt"
+	"math/rand"
 	"testing"
+	"time"
 )
 
 func TestGetMd5(t *testing.T) {
@@ -34,4 +36,15 @@ func TestAnalyseToken(t *testing.T) {
 		t.Fatal("error:", err) // 使用 t.Fatal 代替 fmt.Println
 	}
 	t.Logf("Claims: %v", claims) // 使用 t.Logf 代替 fmt.Println
+}
+
+func TestGenerateCode(t *testing.T) {
+	//时间戳作为随机数种子
+	rand.NewSource(time.Now().UnixNano())
+	var code string
+	for i := 0; i < 6; i++ {
+		code += fmt.Sprintf("%x", rand.Intn(10))
+	}
+	//生成随机数
+	fmt.Println(code)
 }

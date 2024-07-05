@@ -51,7 +51,7 @@ func SearchProblemList(c *gin.Context) {
 	err := tx.Count(&count).Omit("context").Offset(page).Limit(size).Find(&problemList).Error
 	if err != nil {
 		c.JSON(200, gin.H{
-			"code": 400,
+			"code": -1,
 			"msg":  "查询失败",
 		})
 		return
@@ -78,8 +78,8 @@ func ProblemDetail(c *gin.Context) {
 	//获取问题唯一标识
 	problemIdentity := c.Query("problem_identity")
 	if problemIdentity == "" {
-		c.JSON(400, gin.H{
-			"code": 400,
+		c.JSON(200, gin.H{
+			"code": -1,
 			"msg":  "问题标识为空！",
 		})
 		return
@@ -91,13 +91,13 @@ func ProblemDetail(c *gin.Context) {
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(200, gin.H{
-				"code": 200,
+				"code": -1,
 				"msg":  "题目不存在",
 			})
 			return
 		}
 		c.JSON(500, gin.H{
-			"code": 500,
+			"code": -1,
 			"msg":  "服务器内部错误，请联系管理员或者提交issue" + err.Error(),
 		})
 		return

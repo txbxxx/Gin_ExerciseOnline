@@ -12,6 +12,9 @@ import (
 	"crypto/md5"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
+	uuid "github.com/satori/go.uuid"
+	"math/rand"
+	"time"
 )
 
 // UserClaims 定义Claims的结构体，作用是存储用户信息
@@ -65,4 +68,21 @@ func AnalyseToken(token string) (*UserClaims, error) {
 		return nil, err
 	}
 	return userClaim, err
+}
+
+// GenerateUUID 生成UUID
+func GenerateUUID() string {
+	return uuid.NewV4().String()
+}
+
+// GenerateCode 随机生成code验证码
+func GenerateCode() string {
+	//时间戳作为随机数种子
+	rand.NewSource(time.Now().UnixNano())
+	//生成随机数
+	var code string
+	for i := 0; i < 6; i++ {
+		code += fmt.Sprintf("%x", rand.Intn(10))
+	}
+	return code
 }
