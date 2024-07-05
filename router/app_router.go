@@ -35,6 +35,7 @@ func Router() *gin.Engine {
 	userApi := httpServer.Group("/user")
 	{
 		userApi.GET("/userDetail", service.UserDetail)
+		userApi.POST("/login", service.Login)
 	}
 
 	//提交接口

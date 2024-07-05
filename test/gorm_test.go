@@ -69,3 +69,9 @@ func TestName(t *testing.T) {
 	//define.DB.Model(&model.Problem{}).Create(&problem)
 
 }
+
+func TestFind(t *testing.T) {
+	var user model.User
+	define.DB.First(&user)
+	fmt.Println(user.IsAdmin)
+}

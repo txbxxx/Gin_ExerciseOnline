@@ -14,7 +14,7 @@ import (
 
 type Problem struct {
 	gorm.Model
-	Identity   string     `gorm:"column:identity;type:varchar(36)" json:"identity;unique"` //问题的唯一标识
+	Identity   string     `gorm:"column:identity;type:varchar(36);unique" json:"identity"` //问题的唯一标识
 	Title      string     `gorm:"column:title;type:varchar(255)" json:"title"`             //问题标题
 	Context    string     `gorm:"column:context;type:text;" json:"context"`                //问题内容
 	MaxMem     int        `gorm:"column:max_mem;type:int(11)" json:"max_mem"`              //最大运行内存

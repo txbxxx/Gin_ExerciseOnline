@@ -84,6 +84,25 @@ paths:
       summary: 查询提交列表
       tags:
       - 公共方法
+  /user/login:
+    post:
+      parameters:
+      - description: user_name
+        in: formData
+        name: user_name
+        type: string
+      - description: password
+        in: formData
+        name: password
+        type: string
+      responses:
+        "200":
+          description: '{"code":"200","msg","","data":""}'
+          schema:
+            type: string
+      summary: 用户登录
+      tags:
+      - 公共方法
   /user/userDetail:
     get:
       parameters:
