@@ -20,6 +20,30 @@
                 }
             }
         },
+        "/problem/problemDetail": {
+            "get": {
+                "tags": [
+                    "公共方法"
+                ],
+                "summary": "查询问题详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "problem_identity",
+                        "name": "problem_identity",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":\"200\",\"msg\",\"\",\"data\":\"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/problem/searchProblemList": {
             "get": {
                 "tags": [
@@ -41,8 +65,86 @@
                     },
                     {
                         "type": "string",
+                        "description": "category_identity",
+                        "name": "category_identity",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "searchData",
                         "name": "searchData",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":\"200\",\"msg\",\"\",\"data\":\"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/submit/searchSubmitList": {
+            "get": {
+                "tags": [
+                    "公共方法"
+                ],
+                "summary": "查询提交列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "size",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "user_identity",
+                        "name": "user_identity",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "problem_identity",
+                        "name": "problem_identity",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "status",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":\"200\",\"msg\",\"\",\"data\":\"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/userDetail": {
+            "get": {
+                "tags": [
+                    "公共方法"
+                ],
+                "summary": "查用户详细信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user_identity",
+                        "name": "user_identity",
                         "in": "query"
                     }
                 ],

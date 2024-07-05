@@ -8,10 +8,15 @@
 
 package model
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+	"time"
+)
 
+// CategoryProblem 问题和类别的关联表
 type CategoryProblem struct {
-	gorm.Model
-	CategoryID uint `gorm:"column:category_id;type:int(11);primaryKey" json:"category_id"` // 关联表的分类ID
-	ProblemID  uint `gorm:"column:problem_id;type:int(11);primaryKey" json:"problem_id"`   // 关联表的问题ID
+	CreatedAt  time.Time      `json:"created_at"`
+	DeletedAt  gorm.DeletedAt `json:"deleted_at"`
+	CategoryID uint           `gorm:"column:category_id;type:int(11);primaryKey" json:"category_id"` // 关联表的分类ID
+	ProblemID  uint           `gorm:"column:problem_id;type:int(11);primaryKey" json:"problem_id"`   // 关联表的问题ID
 }

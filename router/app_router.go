@@ -28,6 +28,21 @@ func Router() *gin.Engine {
 	problemApi := httpServer.Group("/problem")
 	{
 		problemApi.GET("/searchProblemList", service.SearchProblemList)
+		problemApi.GET("/problemDetail", service.ProblemDetail)
 	}
+
+	//用户接口
+	userApi := httpServer.Group("/user")
+	{
+		userApi.GET("/userDetail", service.UserDetail)
+	}
+
+	//提交接口
+	submitApi := httpServer.Group("/submit")
+	{
+		submitApi.GET("/searchSubmitList", service.SearchSubmitList)
+	}
+
 	return httpServer
+
 }
