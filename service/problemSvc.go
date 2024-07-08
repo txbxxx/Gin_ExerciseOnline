@@ -12,6 +12,7 @@ import (
 	"GinProject_ExerciseOnline/dao"
 	"GinProject_ExerciseOnline/define"
 	"GinProject_ExerciseOnline/model"
+	"GinProject_ExerciseOnline/utils"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -108,4 +109,99 @@ func ProblemDetail(c *gin.Context) {
 		"code": 200,
 		"data": problemData,
 	})
+}
+
+// CreateProblem 创建题目
+// @Tags 管理员方法
+// @Summary 创建题目
+// @Param token header string true "token"
+// @Param title formData string true "title"
+// @Param context formData string true "context"
+// @Param max_mem formData int false "max_mem"
+// @Param max_runtime formData int false "max_runtime"
+// @Param category_name formData array  false "category_name"
+// @Param input_case formData string true "input_case"
+// @Param output_case formData string true "output_case"
+// @Success 200 {string} json "{"code":"200","msg","","data":""}"
+// @Router /admin/createProblem [post]
+func CreateProblem(c *gin.Context) {
+	title := c.PostForm("title")
+	context := c.PostForm("context")
+	categoryName := c.PostFormArray("category_name")
+	inputCase := c.PostForm("input_case")
+	maxRuntime, _ := strconv.Atoi(c.PostForm("max_runtime"))
+	maxMem, _ := strconv.Atoi(c.PostForm("max_mem"))
+	outputCase := c.PostForm("output_case")
+	if title == "" || context == "" || inputCase == "" || outputCase == "" {
+		c.JSON(200, gin.H{
+			"code": -1,
+			"msg":  "参数不能为空",
+		})
+		return
+	}
+
+	//查看问题分类是否存在，如果不存在则创建
+	categoryData := make([]model.Category, 0)
+	for _, v := range categoryName {
+		var category model.Category
+		err := define.DB.First(&category, "name = ?", v).Error
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				category = model.Category{
+					Name:     v,
+					Identity: utils.GenerateUUID(),
+				}
+				err := define.DB.Create(&category).Error
+				if err != nil {
+					c.JSON(200, gin.H{
+						"code": -1,
+						"msg":  "创建失败" + err.Error(),
+					})
+					return
+				}
+				categoryData = append(categoryData, category)
+			}
+			c.JSON(200, gin.H{
+				"code": -1,
+				"msg":  "分类处理失败" + err.Error(),
+			})
+			return
+		}
+		categoryData = append(categoryData, category)
+	}
+
+	//查找测试案例是否存在
+	testCaseData := []model.TestCase{
+		{
+			Identity: utils.GenerateUUID(),
+			Input:    inputCase,
+			Output:   outputCase,
+		},
+	}
+
+	//创建问题对象
+	problem := &model.Problem{
+		Identity:   utils.GenerateUUID(),
+		Title:      title,
+		Context:    context,
+		MaxMem:     maxMem,
+		MaxRuntime: maxRuntime,
+		Category:   categoryData,
+		TestCase:   testCaseData,
+	}
+
+	//创建问题
+	err := define.DB.Create(&problem).Error
+	if err != nil {
+		c.JSON(200, gin.H{
+			"code": -1,
+			"msg":  "创建失败" + err.Error(),
+		})
+	}
+
+	c.JSON(200, gin.H{
+		"code": 200,
+		"msg":  "创建成功",
+	})
+
 }

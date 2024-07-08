@@ -1,6 +1,54 @@
 info:
   contact: {}
 paths:
+  /admin/createProblem:
+    post:
+      parameters:
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: title
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: context
+        in: formData
+        name: context
+        required: true
+        type: string
+      - description: max_mem
+        in: formData
+        name: max_mem
+        type: integer
+      - description: max_runtime
+        in: formData
+        name: max_runtime
+        type: integer
+      - description: category_id
+        in: formData
+        name: category_id
+        type: array
+      - description: input_case
+        in: formData
+        name: input_case
+        required: true
+        type: string
+      - description: output_case
+        in: formData
+        name: output_case
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{"code":"200","msg","","data":""}'
+          schema:
+            type: string
+      summary: 创建题目
+      tags:
+      - 管理员方法
   /ping:
     get:
       responses:
@@ -101,6 +149,25 @@ paths:
           schema:
             type: string
       summary: 用户登录
+      tags:
+      - 公共方法
+  /user/ranking:
+    get:
+      parameters:
+      - description: page
+        in: formData
+        name: page
+        type: string
+      - description: size
+        in: formData
+        name: size
+        type: string
+      responses:
+        "200":
+          description: '{"code":"200","msg","","data":""}'
+          schema:
+            type: string
+      summary: 用户排名
       tags:
       - 公共方法
   /user/register:

@@ -20,4 +20,5 @@ type Problem struct {
 	MaxMem     int        `gorm:"column:max_mem;type:int(11)" json:"max_mem"`              //最大运行内存
 	MaxRuntime int        `gorm:"column:max_runtime;type:int(11)" json:"max_runtime"`      //最大运行时常
 	Category   []Category `gorm:"many2many:category_problem"`                              //连接关联表，表示问题和分类多对多关系
+	TestCase   []TestCase `gorm:"foreignKey:ProblemIdentity;reference:Identity"`           //连接关联表，表示问题和测试用例一对多关系
 }

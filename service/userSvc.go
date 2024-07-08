@@ -15,6 +15,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"strconv"
 	"time"
 )
 
@@ -251,6 +252,9 @@ func Register(c *gin.Context) {
 	//设置用户唯一标识
 	identity := utils.GenerateUUID()
 
+	//生成密码的md值
+	password = utils.GetMd5(password)
+
 	//创建用户对象
 	user := &model.User{
 		Name:     userName,
@@ -283,6 +287,47 @@ func Register(c *gin.Context) {
 		"msg":  "注册成功！！",
 		"data": gin.H{
 			"token": token,
+		},
+	})
+}
+
+// UserRanking 用户排名
+// 可优化的点: 随机验证码
+// @Tags 公共方法
+// @Summary 用户排名
+// @Param page formData  string false "page"
+// @Param size formData  string false "size"
+// @Success 200 {string} json "{"code":"200","msg","","data":""}"
+// @Router /user/ranking [get]
+func UserRanking(c *gin.Context) {
+	//获取页面也页面数据个数
+	page, _ := strconv.Atoi(c.DefaultQuery("page", define.DefaultPage))
+	size, _ := strconv.Atoi(c.DefaultQuery("size", define.DefaultSize))
+
+	//offset从0开始，所以，需要处理一下page
+	page = (page - 1) * size
+
+	//搜素
+	var count int64
+
+	users := make([]*model.User, 0)
+	//排序查找用户
+	err := define.DB.Model(&model.User{}).Count(&count).Order("finish_problem_num desc,submit_problem_num asc").Offset(page).Limit(size).Find(&users).Error
+	if err != nil {
+		c.JSON(200, gin.H{
+			"code": -1,
+			"msg":  "服务器内部错误，请联系管理员或者提交issue" + err.Error(),
+		})
+		return
+	}
+
+	//成功返回
+	c.JSON(200, gin.H{
+		"code": 200,
+		"msg":  "查询成功",
+		"data": gin.H{
+			"count": count,
+			"users": users,
 		},
 	})
 }

@@ -49,8 +49,9 @@ func DBUntil() (*gorm.DB, error) {
 		db.Migrator().HasTable(&model.Category{}) &&
 		db.Migrator().HasTable(&model.Problem{}) &&
 		db.Migrator().HasTable(&model.Submit{}) &&
-		db.Migrator().HasTable(&model.CategoryProblem{})) {
-		db.AutoMigrate(&model.User{}, &model.Category{}, &model.Problem{}, &model.Submit{}, &model.CategoryProblem{})
+		db.Migrator().HasTable(&model.CategoryProblem{}) &&
+		db.Migrator().HasTable(&model.TestCase{})) {
+		db.AutoMigrate(&model.User{}, &model.Category{}, &model.Problem{}, &model.Submit{}, &model.CategoryProblem{}, &model.TestCase{})
 	} else {
 		log.Println("数据库表已存在")
 	}

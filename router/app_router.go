@@ -10,6 +10,7 @@ package router
 
 import (
 	_ "GinProject_ExerciseOnline/docs" //这里要引入项目内的docs文件
+	"GinProject_ExerciseOnline/middleware"
 	"GinProject_ExerciseOnline/service"
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
@@ -38,6 +39,7 @@ func Router() *gin.Engine {
 		userApi.POST("/login", service.Login)
 		userApi.POST("/sendCode", service.SendCode)
 		userApi.POST("/register", service.Register)
+		userApi.GET("/ranking", service.UserRanking)
 	}
 
 	//提交接口
@@ -46,6 +48,11 @@ func Router() *gin.Engine {
 		submitApi.GET("/searchSubmitList", service.SearchSubmitList)
 	}
 
+	//管理接口
+	adminApi := httpServer.Group("/admin", middleware.IsAdmin())
+	{
+		adminApi.POST("/createProblem", service.CreateProblem)
+	}
 	return httpServer
 
 }
