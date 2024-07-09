@@ -15,6 +15,45 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/admin/createCategory": {
+            "post": {
+                "tags": [
+                    "管理员方法"
+                ],
+                "summary": "创建分类",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "parent_id",
+                        "name": "parent_id",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":\"200\",\"msg\",\"\",\"data\":\"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/createProblem": {
             "post": {
                 "tags": [
@@ -57,8 +96,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "array",
-                        "description": "category_id",
-                        "name": "category_id",
+                        "description": "category_name",
+                        "name": "category_name",
                         "in": "formData"
                     },
                     {
@@ -72,6 +111,126 @@ const docTemplate = `{
                         "type": "string",
                         "description": "output_case",
                         "name": "output_case",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":\"200\",\"msg\",\"\",\"data\":\"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/delCategory": {
+            "delete": {
+                "tags": [
+                    "管理员方法"
+                ],
+                "summary": "删除分类",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "identity",
+                        "name": "identity",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":\"200\",\"msg\",\"\",\"data\":\"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/getCategoryList": {
+            "get": {
+                "tags": [
+                    "管理员方法"
+                ],
+                "summary": "查询分类列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "header"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "size",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "keyword",
+                        "name": "keyword",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":\"200\",\"msg\",\"\",\"data\":\"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/modifyCategory": {
+            "put": {
+                "tags": [
+                    "管理员方法"
+                ],
+                "summary": "修改分类",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "identity",
+                        "name": "identity",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "parent_id",
+                        "name": "parent_id",
                         "in": "formData",
                         "required": true
                     }
@@ -102,31 +261,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/problem/problemDetail": {
-            "get": {
-                "tags": [
-                    "公共方法"
-                ],
-                "summary": "查询问题详情",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "problem_identity",
-                        "name": "problem_identity",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "{\"code\":\"200\",\"msg\",\"\",\"data\":\"\"}",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/problem/searchProblemList": {
+        "/problem/getProblemList": {
             "get": {
                 "tags": [
                     "公共方法"
@@ -153,8 +288,32 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "searchData",
-                        "name": "searchData",
+                        "description": "keyword",
+                        "name": "keyword",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":\"200\",\"msg\",\"\",\"data\":\"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/problem/problemDetail": {
+            "get": {
+                "tags": [
+                    "公共方法"
+                ],
+                "summary": "查询问题详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "problem_identity",
+                        "name": "problem_identity",
                         "in": "query"
                     }
                 ],

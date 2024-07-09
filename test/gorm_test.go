@@ -71,13 +71,8 @@ func TestName(t *testing.T) {
 }
 
 func TestFind(t *testing.T) {
-	var user model.User
-	err := define.DB.Model(&model.User{}).Where("mail = ? ", 123).Find(&user).Error
-	if err != nil {
-		t.Error("查询错误", err)
-	}
+	var data []model.Category
+	define.DB.Model(&model.Category{}).Where("identity = ?", 1).Association("Problem").Find(&data)
+	fmt.Println(data)
 
-	if user == (model.User{}) {
-		t.Error("没有找到这个用户")
-	}
 }

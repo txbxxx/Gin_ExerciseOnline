@@ -1,6 +1,32 @@
 info:
   contact: {}
 paths:
+  /admin/createCategory:
+    post:
+      parameters:
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: parent_id
+        in: formData
+        name: parent_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{"code":"200","msg","","data":""}'
+          schema:
+            type: string
+      summary: 创建分类
+      tags:
+      - 管理员方法
   /admin/createProblem:
     post:
       parameters:
@@ -27,9 +53,9 @@ paths:
         in: formData
         name: max_runtime
         type: integer
-      - description: category_id
+      - description: category_name
         in: formData
-        name: category_id
+        name: category_name
         type: array
       - description: input_case
         in: formData
@@ -49,6 +75,85 @@ paths:
       summary: 创建题目
       tags:
       - 管理员方法
+  /admin/delCategory:
+    delete:
+      parameters:
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: identity
+        in: query
+        name: identity
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{"code":"200","msg","","data":""}'
+          schema:
+            type: string
+      summary: 删除分类
+      tags:
+      - 管理员方法
+  /admin/getCategoryList:
+    get:
+      parameters:
+      - description: token
+        in: header
+        name: token
+        type: string
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: size
+        in: query
+        name: size
+        type: integer
+      - description: keyword
+        in: query
+        name: keyword
+        type: string
+      responses:
+        "200":
+          description: '{"code":"200","msg","","data":""}'
+          schema:
+            type: string
+      summary: 查询分类列表
+      tags:
+      - 管理员方法
+  /admin/modifyCategory:
+    put:
+      parameters:
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: identity
+        in: formData
+        name: identity
+        required: true
+        type: string
+      - description: name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: parent_id
+        in: formData
+        name: parent_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{"code":"200","msg","","data":""}'
+          schema:
+            type: string
+      summary: 修改分类
+      tags:
+      - 管理员方法
   /ping:
     get:
       responses:
@@ -57,6 +162,33 @@ paths:
           schema:
             type: string
       summary: 测试连接
+      tags:
+      - 公共方法
+  /problem/getProblemList:
+    get:
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: size
+        in: query
+        name: size
+        type: integer
+      - description: category_identity
+        in: query
+        name: category_identity
+        type: string
+      - description: keyword
+        in: query
+        name: keyword
+        type: string
+      responses:
+        "200":
+          description: '{"code":"200","msg","","data":""}'
+          schema:
+            type: string
+      summary: 查询问题列表
       tags:
       - 公共方法
   /problem/problemDetail:
@@ -72,33 +204,6 @@ paths:
           schema:
             type: string
       summary: 查询问题详情
-      tags:
-      - 公共方法
-  /problem/searchProblemList:
-    get:
-      parameters:
-      - description: page
-        in: query
-        name: page
-        type: integer
-      - description: size
-        in: query
-        name: size
-        type: integer
-      - description: category_identity
-        in: query
-        name: category_identity
-        type: string
-      - description: searchData
-        in: query
-        name: searchData
-        type: string
-      responses:
-        "200":
-          description: '{"code":"200","msg","","data":""}'
-          schema:
-            type: string
-      summary: 查询问题列表
       tags:
       - 公共方法
   /submit/searchSubmitList:

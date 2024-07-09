@@ -19,20 +19,20 @@ import (
 	"strconv"
 )
 
-// SearchProblemList 题目列表
+// GetProblemList 题目列表
 // @Tags 公共方法
 // @Summary 查询问题列表
 // @Param page query int false "page"
 // @Param size query int false "size"
 // @Param category_identity query string false "category_identity"
-// @Param searchData query string false "searchData"
+// @Param keyword query string false "keyword"
 // @Success 200 {string} json "{"code":"200","msg","","data":""}"
-// @Router /problem/searchProblemList [get]
-func SearchProblemList(c *gin.Context) {
+// @Router /problem/getProblemList [get]
+func GetProblemList(c *gin.Context) {
 	//拿到默认显示页数、每页显示个数、用户输入搜素字段、分类唯一标识
 	page, _ := strconv.Atoi(c.DefaultQuery("page", define.DefaultPage))
 	size, _ := strconv.Atoi(c.DefaultQuery("size", define.DefaultSize))
-	searchData := c.Query("searchData")
+	searchData := c.Query("keyword")
 	categoryIdentity := c.Query("category_identity")
 
 	//offset从0开始，所以，需要处理一下page
@@ -45,11 +45,11 @@ func SearchProblemList(c *gin.Context) {
 	searchData = "%" + searchData + "%"
 
 	//接收问题切片
-	problemList := make([]*model.Problem, 0)
+	list := make([]*model.Problem, 0)
 	//查询问题列表，并且限制分页
 	tx := dao.GetProblemList(searchData, categoryIdentity)
 
-	err := tx.Count(&count).Omit("context").Offset(page).Limit(size).Find(&problemList).Error
+	err := tx.Count(&count).Omit("context").Offset(page).Limit(size).Find(&list).Error
 	if err != nil {
 		c.JSON(200, gin.H{
 			"code": -1,
@@ -61,10 +61,10 @@ func SearchProblemList(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"code": 200,
 		"data": gin.H{
-			"count":        count,
-			"page":         page,
-			"size":         size,
-			"problem_list": problemList,
+			"count": count,
+			"page":  page,
+			"size":  size,
+			"list":  list,
 		},
 	})
 }
@@ -146,6 +146,7 @@ func CreateProblem(c *gin.Context) {
 		var category model.Category
 		err := define.DB.First(&category, "name = ?", v).Error
 		if err != nil {
+			//ErrRecordNotFound表示分类不存在
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				category = model.Category{
 					Name:     v,
@@ -160,23 +161,35 @@ func CreateProblem(c *gin.Context) {
 					return
 				}
 				categoryData = append(categoryData, category)
+			} else {
+				c.JSON(200, gin.H{
+					"code": -1,
+					"msg":  "分类处理失败" + err.Error(),
+				})
+				return
 			}
-			c.JSON(200, gin.H{
-				"code": -1,
-				"msg":  "分类处理失败" + err.Error(),
-			})
-			return
 		}
 		categoryData = append(categoryData, category)
 	}
 
 	//查找测试案例是否存在
-	testCaseData := []model.TestCase{
-		{
-			Identity: utils.GenerateUUID(),
-			Input:    inputCase,
-			Output:   outputCase,
-		},
+	var testCaseData []model.TestCase
+	err2 := define.DB.Model(&model.TestCase{}).Where("input = ? and output = ?", inputCase, outputCase).Error
+	if err2 != nil {
+		if errors.Is(err2, gorm.ErrRecordNotFound) {
+			testCase := model.TestCase{
+				Identity: utils.GenerateUUID(),
+				Input:    inputCase,
+				Output:   outputCase,
+			}
+			testCaseData = append(testCaseData, testCase)
+		} else {
+			c.JSON(200, gin.H{
+				"code": -1,
+				"msg":  "案列处理失败" + err2.Error(),
+			})
+			return
+		}
 	}
 
 	//创建问题对象

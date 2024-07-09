@@ -28,7 +28,7 @@ func Router() *gin.Engine {
 	//问题接口
 	problemApi := httpServer.Group("/problem")
 	{
-		problemApi.GET("/searchProblemList", service.SearchProblemList)
+		problemApi.GET("/GetProblemList", service.GetProblemList)
 		problemApi.GET("/problemDetail", service.ProblemDetail)
 	}
 
@@ -52,6 +52,10 @@ func Router() *gin.Engine {
 	adminApi := httpServer.Group("/admin", middleware.IsAdmin())
 	{
 		adminApi.POST("/createProblem", service.CreateProblem)
+		adminApi.GET("/getCategoryList", service.GetCategoryList)
+		adminApi.DELETE("/delCategory", service.DelCategory)
+		adminApi.POST("/createCategory", service.CreateCategory)
+		adminApi.PUT("/modifyCategory", service.ModifyCategory)
 	}
 	return httpServer
 
