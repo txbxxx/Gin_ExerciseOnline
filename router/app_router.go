@@ -40,6 +40,7 @@ func Router() *gin.Engine {
 		userApi.POST("/sendCode", service.SendCode)
 		userApi.POST("/register", service.Register)
 		userApi.GET("/ranking", service.UserRanking)
+		userApi.POST("/submit", middleware.IsUser(), service.Submit)
 	}
 
 	//提交接口
@@ -48,7 +49,7 @@ func Router() *gin.Engine {
 		submitApi.GET("/searchSubmitList", service.SearchSubmitList)
 	}
 
-	//管理接口
+	//管理权限接口
 	adminApi := httpServer.Group("/admin", middleware.IsAdmin())
 	{
 		adminApi.POST("/createProblem", service.CreateProblem)
@@ -57,6 +58,7 @@ func Router() *gin.Engine {
 		adminApi.POST("/createCategory", service.CreateCategory)
 		adminApi.PUT("/modifyCategory", service.ModifyCategory)
 	}
+
 	return httpServer
 
 }

@@ -321,6 +321,32 @@ paths:
       summary: 向邮箱发送验证码
       tags:
       - 公共方法
+  /user/submit:
+    post:
+      parameters:
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: problem_identity
+        in: query
+        name: problem_identity
+        type: string
+      - description: code
+        in: body
+        name: code
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: '{"code":"200","msg","","data":""}'
+          schema:
+            type: string
+      summary: 提交代码
+      tags:
+      - 用户方法
   /user/userDetail:
     get:
       parameters:
