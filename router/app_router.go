@@ -19,6 +19,7 @@ import (
 
 func Router() *gin.Engine {
 	httpServer := gin.Default()
+	httpServer.Use(middleware.Cors())
 
 	//路由规则
 
@@ -28,7 +29,7 @@ func Router() *gin.Engine {
 	//问题接口
 	problemApi := httpServer.Group("/problem")
 	{
-		problemApi.GET("/GetProblemList", service.GetProblemList)
+		problemApi.GET("/getProblemList", service.GetProblemList)
 		problemApi.GET("/problemDetail", service.ProblemDetail)
 	}
 

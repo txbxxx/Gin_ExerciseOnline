@@ -71,8 +71,8 @@ func TestName(t *testing.T) {
 }
 
 func TestFind(t *testing.T) {
-	var data []model.Category
-	define.DB.Model(&model.Category{}).Where("identity = ?", 1).Association("Problem").Find(&data)
-	fmt.Println(data)
-
+	err := define.DB.AutoMigrate(&model.Problem{})
+	if err != nil {
+		t.Error("创建类别错误", err)
+	}
 }

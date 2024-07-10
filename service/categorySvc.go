@@ -57,10 +57,8 @@ func GetCategoryList(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"code": 200,
 		"data": gin.H{
-			"count": count,
-			"page":  page,
-			"size":  size,
 			"list":  categoryList,
+			"count": count,
 		},
 	})
 }

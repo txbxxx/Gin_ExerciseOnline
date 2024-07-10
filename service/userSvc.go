@@ -327,7 +327,7 @@ func UserRanking(c *gin.Context) {
 		"msg":  "查询成功",
 		"data": gin.H{
 			"count": count,
-			"users": users,
+			"list":  users,
 		},
 	})
 }

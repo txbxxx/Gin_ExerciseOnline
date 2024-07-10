@@ -72,12 +72,12 @@ func GetProblemList(c *gin.Context) {
 // ProblemDetail 题目详情
 // @Tags 公共方法
 // @Summary 查询问题详情
-// @Param problem_identity query string false "problem_identity"
+// @Param identity query string false "identity"
 // @Success 200 {string} json "{"code":"200","msg","","data":""}"
 // @Router /problem/problemDetail [get]
 func ProblemDetail(c *gin.Context) {
 	//获取问题唯一标识
-	problemIdentity := c.Query("problem_identity")
+	problemIdentity := c.Query("identity")
 	if problemIdentity == "" {
 		c.JSON(200, gin.H{
 			"code": -1,

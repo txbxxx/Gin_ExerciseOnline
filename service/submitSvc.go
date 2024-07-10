@@ -65,10 +65,10 @@ func SearchSubmitList(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"code": 200,
 		"data": gin.H{
-			"page":        page,
-			"size":        size,
-			"count":       count,
-			"submit_list": submitList,
+			"page":  page,
+			"size":  size,
+			"count": count,
+			"list":  submitList,
 		},
 	})
 }
@@ -227,6 +227,7 @@ func Submit(c *gin.Context) {
 			m := make(map[string]interface{})
 			//提交一次+1
 			m["submit_problem_num"] = gorm.Expr("submit_problem_num + ?", 1)
+			fmt.Println("提交状态为", submit.Status)
 			//如果提交状态为成功成功次数就+1
 			if submit.Status == 1 {
 				m["finish_problem_num"] = gorm.Expr("finish_problem_num + ?", 1)
