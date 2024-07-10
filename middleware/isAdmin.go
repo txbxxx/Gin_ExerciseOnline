@@ -16,6 +16,7 @@ import (
 func IsAdmin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		auth := c.GetHeader("token")
+		//解析token返回claims，从claims中获取
 		claims, err := utils.AnalyseToken(auth)
 		if err != nil {
 			c.JSON(200, gin.H{

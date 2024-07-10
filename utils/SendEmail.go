@@ -15,7 +15,6 @@ import (
 )
 
 // SendEmail 发送邮箱
-// 可优化点: 按照系用户填写的邮箱发送
 func SendEmail(toUserEmail, code string) error {
 	e := email.NewEmail()               // 创建邮件对象
 	e.From = "Code <2865260231@qq.com>" // 发送人

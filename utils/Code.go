@@ -12,8 +12,10 @@ import "os"
 
 // SaveCode 保存用户运行的代码
 func SaveCode(code []byte) (string, error) {
+	//代码保存地址
 	dirName := "code/" + GenerateUUID()
 	filePath := dirName + "/main.go"
+
 	err := os.Mkdir(dirName, os.ModePerm)
 	if err != nil {
 		return "", err
