@@ -85,7 +85,8 @@ func Login(c *gin.Context) {
 
 	//获取用户信息
 	var data model.User
-	errData := define.DB.Model(&model.User{}).Where("name = ? and password = ?", userName, password).Find(&data).Error
+	var cunt int64
+	errData := define.DB.Model(&model.User{}).Where("name = ? and password = ?", userName, password).Count(&cunt).Find(&data).Error
 	if errData != nil {
 		if errors.Is(errData, gorm.ErrRecordNotFound) {
 			c.JSON(200, gin.H{
@@ -102,7 +103,7 @@ func Login(c *gin.Context) {
 	}
 
 	//保障再次判断用户是否存在
-	if data == (model.User{}) {
+	if cunt > 0 {
 		c.JSON(200, gin.H{
 			"code": -1,
 			"msg":  "用户名或密码错误",
